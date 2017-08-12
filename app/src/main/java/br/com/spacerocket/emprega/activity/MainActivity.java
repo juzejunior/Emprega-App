@@ -17,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -44,24 +45,28 @@ public class MainActivity extends AppCompatActivity
 
     private Candidato mCandidato;
     private ArrayList<Vagas> mVagas = new ArrayList<>();
+    private ArrayList<Vagas> mVagasReserva = new ArrayList<>();
     //Firebase instances
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef =  FirebaseDatabase.getInstance().getReference().child("trabalhador");
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
+    ProgressBar pgb;
+
     //for card
     private RecyclerView mRecyclerView;
     private static RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;;
+    private RecyclerView.LayoutManager mLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        initElements();
         //get user data
         getUserData();
-        initElements();
         //wait data
         waitData();
         //make the match offerJobs
@@ -79,6 +84,8 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         mCandidato = new Candidato();
+
+        pgb = (ProgressBar) findViewById(R.id.progressLoad1);
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -129,7 +136,6 @@ public class MainActivity extends AppCompatActivity
                 Interesse interesse = dataSnapshot.getValue(Interesse.class);
                 if (interesse != null) {
                     mCandidato.getmInteresses().add(interesse);
-                    getNameOfInterest(interesse.getChave());
                     getUserExperience();
                 }
             }
@@ -183,34 +189,17 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    public String getNameOfInterest(String key){
-        DatabaseReference myRef =  FirebaseDatabase.getInstance().getReference().child("tags")
-                .child(key).child("nome");
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String tag = dataSnapshot.getValue(String.class);
-                mCandidato.getmInteresses().
-                        get(mCandidato.getmInteresses().size() - 1).setNome(tag);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-        return "Alo";
-    }
 
     public void waitData(){
         new CountDownTimer(200, 1000) {
-
             public void onTick(long millisUntilFinished) {
                 //progressLoad.setVisibility(View.VISIBLE);
             }
 
             public void onFinish() {
                 loadVagas();
+                //espera e carrega as tags
+                waitDataVagas();
             }
         }.start();
     }
@@ -224,11 +213,13 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
                 Vagas vaga = dataSnapshot.getValue(Vagas.class);
-                searchEngine(vaga , dataSnapshot.getKey());
+                vaga.setVagaId(dataSnapshot.getKey());
+                mVagasReserva.add(vaga);
             }
 
             @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String prevChildKey) {}
+            public void onChildChanged(DataSnapshot dataSnapshot, String prevChildKey) {
+            }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {}
@@ -241,33 +232,78 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    public void searchEngine(final Vagas vaga, String companykey){
+    public void waitDataVagas(){
+        new CountDownTimer(1000, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                //progressLoad.setVisibility(View.VISIBLE);
+            }
+
+            public void onFinish() {
+                //Toast.makeText(MainActivity.this, "Size: "+Integer.toString(mVagasReserva.size()), Toast.LENGTH_SHORT).show();
+                //Realizar a busca por empresa
+                searchEngine();
+            }
+        }.start();
+    }
+
+    public void searchEngine(){
+        for(Integer  i = 0; i < mVagasReserva.size(); i++) {
+            search(i);
+            waitFoRealSearch();
+        }
+        //waitFoRealSearch();
+        //wait here
+        //pgb.setVisibility(View.INVISIBLE);
+        Toast.makeText(this, "iniciando...", Toast.LENGTH_SHORT).show();
+    }
+
+
+    public void waitFoRealSearch(){
+        new CountDownTimer(100, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                //progressLoad.setVisibility(View.VISIBLE);
+            }
+
+            public void onFinish() {
+                if(mVagas.size() > 0){
+                    pgb.setVisibility(View.INVISIBLE);
+                }
+            }
+        }.start();
+    }
+
+
+    public void search(final Integer position){
         DatabaseReference myRef =  FirebaseDatabase.getInstance().getReference().child("vagas")
-                .child(companykey).child("interesses");
+                .child(mVagasReserva.get(position).getVagaId()).child("interesses");
         myRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Interesse interesse = dataSnapshot.getValue(Interesse.class);
-                vaga.getmInteresses().add(interesse);
+                mVagasReserva.get(position).getmInteresses().add(interesse);
                 //verifica se o local é próximo do usuário
-                if(mCandidato.getMunicipio().toLowerCase().equals(vaga.getCidade().toLowerCase())){
+                if(mCandidato.getMunicipio().toLowerCase().equals(mVagasReserva.get(position).getCidade().toLowerCase())){
                     Log.d("LOCAL: ", "Enconrei um local próximo.");
+
                     for(Experiencia e : mCandidato.getmExperiencia()){
-                        if (e.getCbo().toLowerCase().equals(vaga.getCBO().toLowerCase()) || e.getCbo().toLowerCase().equals(vaga.getOcupacao().toLowerCase())) {//se o CBO for igual já adiciona a lista
+                        if (e.getCbo().toLowerCase().equals(mVagasReserva.get(position).getCBO().toLowerCase()) || e.getCbo().toLowerCase().equals(mVagasReserva.get(position).getOcupacao().toLowerCase())) {//se o CBO for igual já adiciona a lista
                             Log.d("LOCAL: ", "Encontrei um local com sua experiência.");
-                            if(!mVagas.contains(vaga)){
-                                mVagas.add(vaga);
+                            Toast.makeText(MainActivity.this, "Iniciando serviço", Toast.LENGTH_SHORT).show();
+                            if(!mVagas.contains(mVagasReserva.get(position))){
+                                mVagas.add(mVagasReserva.get(position));
+                                Toast.makeText(MainActivity.this, "Cheguei aqui", Toast.LENGTH_SHORT).show();
                                 mAdapter.notifyDataSetChanged();
                             }
                         }else{//Verifica as habilidades do funcionário se há alguma possibilidade de contratação
                             for(Interesse canInt : mCandidato.getmInteresses()){
                                 if(canInt.getChave().toLowerCase().equals(interesse.getChave().toLowerCase())){
-                                    if(!mVagas.contains(vaga)){
+                                    if(!mVagas.contains(mVagasReserva.get(position))){
                                         Log.d("LOCAL: ", "Encontrei um local  para as suas habilidades.");
-                                        mVagas.add(vaga);
+                                        mVagas.add(mVagasReserva.get(position));
                                         mAdapter.notifyDataSetChanged();
                                     }
-
                                 }
                             }
                         }

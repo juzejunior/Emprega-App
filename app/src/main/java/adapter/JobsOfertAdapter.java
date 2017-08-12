@@ -6,7 +6,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -25,15 +27,29 @@ public class JobsOfertAdapter extends RecyclerView.Adapter<JobsOfertAdapter.MyVi
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
 
+        public TextView tvEmprsa;
         public TextView tvCargo;
+        public TextView tvExperiencia;
+        public TextView tvHoras;
+        public TextView tvBairro;
+        public TextView tvSalario;
         public CardView mCardView;
+        public Button btnJob;
+        public Button btnCancel;
 
         public View view;
 
         public MyViewHolder(View view) {
             super(view);
+            tvEmprsa = (TextView) view.findViewById(R.id.tvEmpresaName);
             tvCargo = (TextView) view.findViewById(R.id.tvOcuppation);
+            tvExperiencia = (TextView) view.findViewById(R.id.tvExperience);
+            tvHoras = (TextView) view.findViewById(R.id.textView2);
+            tvBairro = (TextView) view.findViewById(R.id.tvBairroCidade);
+            tvSalario = (TextView) view.findViewById(R.id.tvHorario);
             mCardView = (CardView) view.findViewById(R.id.cvOfferJobs);
+            btnJob = (Button) view.findViewById(R.id.button4);
+            btnCancel = (Button) view.findViewById(R.id.btnCancelar);
         }
     }
 
@@ -54,7 +70,11 @@ public class JobsOfertAdapter extends RecyclerView.Adapter<JobsOfertAdapter.MyVi
     public void onBindViewHolder(final JobsOfertAdapter.MyViewHolder holder, final int position) {
         final Vagas job = listJobs.get(position);
         holder.tvCargo.setText(job.getOcupacao());
-
+        holder.tvSalario.setText("Salário: R$ "+job.getSalario());
+        holder.tvHoras.setText(job.getHoraririoDeTrabalho()+" Hrs semanais.");
+        holder.tvBairro.setText("Bairro: "+job.getBairro()+", "+job.getCidade());
+        holder.tvExperiencia.setText(job.getTempoExperiencia()+" de experiência");
+        holder.tvEmprsa.setText(job.getNomeDaEmpresa());
          /*hold card click*/
         holder.mCardView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,6 +87,21 @@ public class JobsOfertAdapter extends RecyclerView.Adapter<JobsOfertAdapter.MyVi
             }
         });
 
+        holder.btnJob.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(mContext, "Parabéns você acaba de dar um JOB em uma vaga," +
+                        "fique de olho na sua tela de processo, que em breve a empresa entrará em contato.",
+                        Toast.LENGTH_LONG).show();
+            }
+        });
+
+        holder.btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
     }
 
     @Override

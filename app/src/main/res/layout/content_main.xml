@@ -9,6 +9,15 @@
     tools:context="br.com.spacerocket.emprega.activity.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
+    <ProgressBar
+        android:id="@+id/progressLoad1"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rvVagas"
         android:layout_width="match_parent"

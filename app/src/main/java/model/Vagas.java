@@ -25,6 +25,7 @@ public class Vagas {
     private String referencia;
     private String salario;
     private String tempoExperiencia;
+    private String vagaId;
 
     public Vagas(String CBO, String escolaridade, String ocupacao, String bairro, String beneficios,
                  String cidade, String descricao, String habilitacao, String horaririoDeTrabalho,
@@ -196,5 +197,13 @@ public class Vagas {
 
     public void setTempoExperiencia(String tempoExperiencia) {
         this.tempoExperiencia = tempoExperiencia;
+    }
+
+    public String getVagaId() {
+        return vagaId;
+    }
+
+    public void setVagaId(String vagaId) {
+        this.vagaId = vagaId;
     }
 }
