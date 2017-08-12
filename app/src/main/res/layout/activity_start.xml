@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="br.com.spacerocket.emprega.activity.StartActivity">
+
+    <Button
+        android:id="@+id/btnLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Login"
+        tools:layout_editor_absoluteX="71dp"
+        tools:layout_editor_absoluteY="387dp"
+        android:layout_alignBaseline="@+id/btnCadastro"
+        android:layout_alignBottom="@+id/btnCadastro"
+        android:layout_toLeftOf="@+id/btnCadastro"
+        android:layout_toStartOf="@+id/btnCadastro"
+        android:layout_marginRight="40dp"
+        android:layout_marginEnd="40dp" />
+
+    <Button
+        android:id="@+id/btnCadastro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cadastro"
+        tools:layout_editor_absoluteX="203dp"
+        tools:layout_editor_absoluteY="387dp"
+        android:layout_marginRight="72dp"
+        android:layout_marginEnd="72dp"
+        android:layout_marginBottom="92dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+</RelativeLayout>

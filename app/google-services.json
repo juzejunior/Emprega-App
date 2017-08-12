@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "582191538712",
+    "firebase_url": "https://hackathon-emprega.firebaseio.com",
+    "project_id": "hackathon-emprega",
+    "storage_bucket": "hackathon-emprega.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:582191538712:android:4e56aff45312cb11",
+        "android_client_info": {
+          "package_name": "br.com.spacerocket.emprega"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "582191538712-12gbar6ofu8p0f61mjb70c67g104smo2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.com.spacerocket.emprega",
+            "certificate_hash": "ebbbb10fc7025604da54dbcb3a0be047b18dd5ec"
+          }
+        },
+        {
+          "client_id": "582191538712-5nfjqeiip7p8defopr639e6m51tpg3fq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7Z3sctkbl72HwkfXrpwoPZX-dj4tc2fY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "582191538712-5nfjqeiip7p8defopr639e6m51tpg3fq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

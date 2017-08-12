@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cvJobs"
+    android:layout_width="fill_parent"
+    android:layout_height="100dp"
+    android:elevation="2dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    card_view:cardCornerRadius="4dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!--Name-->
+        <TextView
+            android:id="@+id/tvCargo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="Pedreiro"
+            android:textColor="#000" />
+
+        <!--age -->
+        <TextView
+            android:id="@+id/tvEmpresa"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvCargo"
+            android:layout_margin="8dp"
+            android:layout_toRightOf="@+id/personProfile"
+            android:text="XIS" />
+
+        <!--Type-->
+        <TextView
+            android:id="@+id/tvSalario"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvEmpresa"
+            android:layout_marginLeft="8dp"
+            android:layout_toRightOf="@+id/personProfile"
+            android:text="Salário: 950,00" />
+
+        <!--Current Pontuation-->
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/tvCargo"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_margin="8dp"
+            android:text="Status: Em Andamento" />
+        <!--Last Acess-->
+        <!--<TextView
+            android:id="@+id/tvPatientLastSession"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Último acesso: 42/00/0000"
+            android:layout_alignBaseline="@+id/tvEmpresa"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="8dp"
+            />-->
+
+    </RelativeLayout>
+
+
+</android.support.v7.widget.CardView>

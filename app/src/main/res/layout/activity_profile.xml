@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="br.com.spacerocket.emprega.activity.ProfileActivity">
+
+    <!--Profile Image-->
+    <ImageView
+        android:id="@+id/personProfile"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:src="@drawable/ic_user"
+        android:layout_marginTop="67dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <!--Name-->
+    <TextView
+        android:id="@+id/tvPatientName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="John Doe"
+        android:textSize="20sp"
+        android:textColor="#000"
+        android:layout_below="@+id/personProfile"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp" />
+
+    <TextView
+        android:id="@+id/tvHabilidades"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvPatientName"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="33dp"
+        android:text="Romântico - Atencioso - Carinhoso\n   Cozinho Bem - Arrumo a Casa\n   " />
+
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:src="@drawable/casa"
+        android:layout_marginLeft="19dp"
+        android:layout_marginStart="19dp"
+        android:layout_below="@+id/tvHabilidades"
+        android:layout_alignLeft="@+id/personProfile"
+        android:layout_alignStart="@+id/personProfile"
+        android:id="@+id/imageView3" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:src="@drawable/casa"
+        android:layout_below="@+id/tvHabilidades"
+        android:layout_toLeftOf="@+id/imageView3"
+        android:layout_toStartOf="@+id/imageView3" />
+
+
+    <!--age -->
+
+    <!--Type-->
+
+    <!--Current Pontuation-->
+    <!--Last Acess-->
+
+</RelativeLayout>
