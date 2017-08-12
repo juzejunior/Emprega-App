@@ -6,17 +6,37 @@ package model;
 
 public class Jobs {
     private String cargo, empresa, situacao;
-    private float salario;
+    private String vagaId;
+    private String salario;
+    private String candidatoId;
 
-    public Jobs(String cargo, String empresa, String situacao, float salario) {
+    public Jobs(String cargo, String empresa, String situacao, String salario, String vagaId) {
         this.cargo = cargo;
         this.empresa = empresa;
         this.situacao = situacao;
         this.salario = salario;
+        this.vagaId = vagaId;
+    }
+
+    public Jobs(String cargo, String empresa, String situacao, String salario, String vagaId, String candidatoId) {
+        this.cargo = cargo;
+        this.empresa = empresa;
+        this.situacao = situacao;
+        this.salario = salario;
+        this.vagaId = vagaId;
+        this.candidatoId = candidatoId;
     }
 
     public String getCargo() {
         return cargo;
+    }
+
+    public String getVagaId() {
+        return vagaId;
+    }
+
+    public void setVagaId(String vagaId) {
+        this.vagaId = vagaId;
     }
 
     public void setCargo(String cargo) {
@@ -39,11 +59,19 @@ public class Jobs {
         this.situacao = situacao;
     }
 
-    public float getSalario() {
+    public String getSalario() {
         return salario;
     }
 
-    public void setSalario(float salario) {
+    public void setSalario(String salario) {
         this.salario = salario;
+    }
+
+    public String getCandidatoId() {
+        return candidatoId;
+    }
+
+    public void setCandidatoId(String candidatoId) {
+        this.candidatoId = candidatoId;
     }
 }

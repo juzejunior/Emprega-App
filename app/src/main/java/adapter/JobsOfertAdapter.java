@@ -1,6 +1,7 @@
 package adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,9 +11,13 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.ArrayList;
 
 import br.com.spacerocket.emprega.R;
+import br.com.spacerocket.emprega.activity.MainActivity;
 import model.Jobs;
 import model.Vagas;
 
@@ -79,17 +84,18 @@ public class JobsOfertAdapter extends RecyclerView.Adapter<JobsOfertAdapter.MyVi
         holder.mCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*if(mContext instanceof JobsActivity){
-                    Intent intentPatientInfo = new Intent(mContext, PatientInfoActivity.class);
-                    intentPatientInfo.putExtra("PATIENT_OBJECT", listPatient.get(position));
-                    mContext.startActivity(intentPatientInfo);
-                }*/
+
             }
         });
 
         holder.btnJob.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                if(mContext instanceof MainActivity){
+                    ((MainActivity)mContext).newJob(job);
+                }
+
                 Toast.makeText(mContext, "Parabéns você acaba de dar um JOB em uma vaga," +
                         "fique de olho na sua tela de processo, que em breve a empresa entrará em contato.",
                         Toast.LENGTH_LONG).show();

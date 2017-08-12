@@ -392,4 +392,15 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
+    public void newJob(Vagas v){
+        //put on database
+        DatabaseReference myRef =  FirebaseDatabase.getInstance().getReference().child("vagas").child(v.getVagaId())
+                .child("candidaturas");
+
+        Jobs job1 = new Jobs(v.getOcupacao(), v.getNomeDaEmpresa(), "Aguardando", v.getSalario(), v.getVagaId(), mCandidato.getUserID());
+        myRef.push().setValue(job1);
+
+    }
 }

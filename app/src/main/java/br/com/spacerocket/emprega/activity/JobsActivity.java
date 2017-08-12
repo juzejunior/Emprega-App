@@ -40,11 +40,11 @@ public class JobsActivity extends AppCompatActivity {
 
     public void fullyList(){
         jobs.clear();
-        Jobs job = new Jobs("Pedreiro", "XIS", "Em andamento", 950);
+        Jobs job = new Jobs("Pedreiro", "XIS", "Em andamento", "950", "sd");
         jobs.add(job);
-        job = new Jobs("Ajudante de Pedreiro", "XIS", "Em andamento", 450);
+        job = new Jobs("Ajudante de Pedreiro", "XIS", "Em andamento", "450","dasfsdf");
         jobs.add(job);
-        job = new Jobs("Mestre de Obras", "XIS", "Em andamento", 1450);
+        job = new Jobs("Mestre de Obras", "XIS", "Em andamento", "1450","asdfasf");
         jobs.add(job);
 
     }

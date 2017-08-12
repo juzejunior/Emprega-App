@@ -63,7 +63,7 @@ public class JobsAdapter extends RecyclerView.Adapter<JobsAdapter.MyViewHolder> 
         final Jobs job = listJobs.get(position);
         holder.tvCargo.setText(job.getCargo());
         holder.tvEmpresa.setText(job.getEmpresa());
-        holder.tvSalario.setText(Float.toString(job.getSalario()));
+        holder.tvSalario.setText(job.getSalario());
         holder.tvSituacao.setText(job.getSituacao());
 
          /*hold card click*/
