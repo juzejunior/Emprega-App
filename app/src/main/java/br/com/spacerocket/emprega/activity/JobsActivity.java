@@ -12,6 +12,7 @@ import br.com.spacerocket.emprega.R;
 import model.Jobs;
 
 public class JobsActivity extends AppCompatActivity {
+
     private RecyclerView mRecyclerView;
     private static RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;

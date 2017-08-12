@@ -1,5 +1,7 @@
 package model;
 
+import java.util.ArrayList;
+
 /**
  * Created by junio on 11/08/2017.
  */
@@ -16,19 +18,22 @@ public class Candidato {
     private String escolaridade;
     private String estado;
     private String userID;
-    //experiencia
-    //interesses
-    //idiomas
+    private ArrayList<Idioma> mIdiomas = new ArrayList<>();
+    private ArrayList<Interesse> mInteresses = new ArrayList<>();
+    private ArrayList<Experiencia> mExperiencia = new ArrayList<>();
     private String municipio;
     private String nome;
     private int numeroId;
     private String raca;
+    private String userkey;
+    private String key;
 
     public Candidato(){}
 
     public Candidato(String bairro, String cep, String cpf, String curso, String dataNascimento,
                      String email, String endereco, String escolaridade, String estado,
-                     String municipio, String nome, int numeroId, String raca) {
+                     String municipio, String nome, int numeroId, String raca, String userkey,
+                     String key) {
         this.bairro = bairro;
         this.cep = cep;
         this.cpf = cpf;
@@ -42,6 +47,16 @@ public class Candidato {
         this.nome = nome;
         this.numeroId = numeroId;
         this.raca = raca;
+        this.userkey = userkey;
+        this.key = key;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getBairro() {
@@ -154,5 +169,37 @@ public class Candidato {
 
     public void setUserID(String userID) {
         this.userID = userID;
+    }
+
+    public ArrayList<Idioma> getmIdiomas() {
+        return mIdiomas;
+    }
+
+    public void setmIdiomas(ArrayList<Idioma> mIdiomas) {
+        this.mIdiomas = mIdiomas;
+    }
+
+    public ArrayList<Interesse> getmInteresses() {
+        return mInteresses;
+    }
+
+    public void setmInteresses(ArrayList<Interesse> mInteresses) {
+        this.mInteresses = mInteresses;
+    }
+
+    public String getUserkey() {
+        return userkey;
+    }
+
+    public void setUserkey(String userkey) {
+        this.userkey = userkey;
+    }
+
+    public ArrayList<Experiencia> getmExperiencia() {
+        return mExperiencia;
+    }
+
+    public void setmExperiencia(ArrayList<Experiencia> mExperiencia) {
+        this.mExperiencia = mExperiencia;
     }
 }

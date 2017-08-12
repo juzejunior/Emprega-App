@@ -2,8 +2,11 @@ package br.com.spacerocket.emprega.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -25,25 +28,44 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+
+import adapter.JobsAdapter;
+import adapter.JobsOfertAdapter;
 import br.com.spacerocket.emprega.R;
 import model.Candidato;
+import model.Experiencia;
+import model.Interesse;
+import model.Jobs;
+import model.Vagas;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private Candidato mCandidato;
+    private ArrayList<Vagas> mVagas = new ArrayList<>();
     //Firebase instances
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef =  FirebaseDatabase.getInstance().getReference().child("trabalhador");
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
+    //for card
+    private RecyclerView mRecyclerView;
+    private static RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        //get user data
+        getUserData();
         initElements();
+        //wait data
+        waitData();
+        //make the match offerJobs
+
     }
 
     public void initElements(){
@@ -57,11 +79,17 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         mCandidato = new Candidato();
-        //get user data
-        getUserData();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.rvVagas);
+        // use a linear layout manager
+        mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        // specify an adapter (see also next example)
+        mAdapter = new JobsOfertAdapter(this, mVagas);
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     public void getUserData(){
@@ -71,8 +99,8 @@ public class MainActivity extends AppCompatActivity
             public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
                 Candidato c = dataSnapshot.getValue(Candidato.class);
                 if(c != null && c.getUserID().equals(firebaseUser.getUid())){
-                    //Toast.makeText(MainActivity.this, c.getNome(), Toast.LENGTH_SHORT).show();
                     mCandidato  = c;
+                    getUserInterest();
                 }
             }
 
@@ -89,6 +117,184 @@ public class MainActivity extends AppCompatActivity
             public void onCancelled(DatabaseError databaseError) {}
         });
 
+    }
+
+    public void getUserInterest() {
+        myRef = FirebaseDatabase.getInstance().getReference().child("trabalhador")
+                .child(mCandidato.getKey()).child("interesses");
+        // Read from the database
+        myRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
+                Interesse interesse = dataSnapshot.getValue(Interesse.class);
+                if (interesse != null) {
+                    mCandidato.getmInteresses().add(interesse);
+                    getNameOfInterest(interesse.getChave());
+                    getUserExperience();
+                }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String prevChildKey) {
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String prevChildKey) {
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
+    public void getUserExperience(){
+        myRef = FirebaseDatabase.getInstance().getReference().child("trabalhador")
+                .child(mCandidato.getKey()).child("experiencia");
+        // Read from the database
+        myRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
+                Experiencia experiencia = dataSnapshot.getValue(Experiencia.class);
+                if (experiencia != null) {
+                    mCandidato.getmExperiencia().add(experiencia);
+                }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String prevChildKey) {
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String prevChildKey) {
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
+    public String getNameOfInterest(String key){
+        DatabaseReference myRef =  FirebaseDatabase.getInstance().getReference().child("tags")
+                .child(key).child("nome");
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String tag = dataSnapshot.getValue(String.class);
+                mCandidato.getmInteresses().
+                        get(mCandidato.getmInteresses().size() - 1).setNome(tag);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        return "Alo";
+    }
+
+    public void waitData(){
+        new CountDownTimer(200, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                //progressLoad.setVisibility(View.VISIBLE);
+            }
+
+            public void onFinish() {
+                loadVagas();
+            }
+        }.start();
+    }
+
+
+
+    public  void loadVagas(){
+        // Read from the database
+        myRef = FirebaseDatabase.getInstance().getReference().child("vagas");
+        myRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
+                Vagas vaga = dataSnapshot.getValue(Vagas.class);
+                searchEngine(vaga , dataSnapshot.getKey());
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String prevChildKey) {}
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {}
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String prevChildKey) {}
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+    }
+
+    public void searchEngine(final Vagas vaga, String companykey){
+        DatabaseReference myRef =  FirebaseDatabase.getInstance().getReference().child("vagas")
+                .child(companykey).child("interesses");
+        myRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Interesse interesse = dataSnapshot.getValue(Interesse.class);
+                vaga.getmInteresses().add(interesse);
+                //verifica se o local é próximo do usuário
+                if(mCandidato.getMunicipio().toLowerCase().equals(vaga.getCidade().toLowerCase())){
+                    Log.d("LOCAL: ", "Enconrei um local próximo.");
+                    for(Experiencia e : mCandidato.getmExperiencia()){
+                        if (e.getCbo().toLowerCase().equals(vaga.getCBO().toLowerCase()) || e.getCbo().toLowerCase().equals(vaga.getOcupacao().toLowerCase())) {//se o CBO for igual já adiciona a lista
+                            Log.d("LOCAL: ", "Encontrei um local com sua experiência.");
+                            if(!mVagas.contains(vaga)){
+                                mVagas.add(vaga);
+                                mAdapter.notifyDataSetChanged();
+                            }
+                        }else{//Verifica as habilidades do funcionário se há alguma possibilidade de contratação
+                            for(Interesse canInt : mCandidato.getmInteresses()){
+                                if(canInt.getChave().toLowerCase().equals(interesse.getChave().toLowerCase())){
+                                    if(!mVagas.contains(vaga)){
+                                        Log.d("LOCAL: ", "Encontrei um local  para as suas habilidades.");
+                                        mVagas.add(vaga);
+                                        mAdapter.notifyDataSetChanged();
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                Toast.makeText(MainActivity.this, Integer.toString(mVagas.size()), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
 
