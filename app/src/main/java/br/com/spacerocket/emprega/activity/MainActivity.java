@@ -18,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -67,9 +68,6 @@ public class MainActivity extends AppCompatActivity
         initElements();
         //get user data
         getUserData();
-        //wait data
-        waitData();
-        //make the match offerJobs
 
     }
 
@@ -82,6 +80,7 @@ public class MainActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+
 
         mCandidato = new Candidato();
 
@@ -107,7 +106,21 @@ public class MainActivity extends AppCompatActivity
                 Candidato c = dataSnapshot.getValue(Candidato.class);
                 if(c != null && c.getUserID().equals(firebaseUser.getUid())){
                     mCandidato  = c;
-                    getUserInterest();
+                    DataSnapshot dataSnapshotInt = dataSnapshot.child("interesses");
+                    Iterable<DataSnapshot> intChildren = dataSnapshotInt.getChildren();
+                    for(DataSnapshot intC : intChildren){
+                        Interesse intT = intC.getValue(Interesse.class);
+                        mCandidato.getmInteresses().add(intT);
+                    }
+
+                    DataSnapshot dataSnapshotExt = dataSnapshot.child("experiencia");
+                    Iterable<DataSnapshot> expChildren = dataSnapshotExt.getChildren();
+                    for(DataSnapshot intC : expChildren){
+                        Experiencia exp = intC.getValue(Experiencia.class);
+                        mCandidato.getmExperiencia().add(exp);
+                    }
+
+                    loadVagas();
                 }
             }
 
@@ -126,86 +139,6 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void getUserInterest() {
-        myRef = FirebaseDatabase.getInstance().getReference().child("trabalhador")
-                .child(mCandidato.getKey()).child("interesses");
-        // Read from the database
-        myRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
-                Interesse interesse = dataSnapshot.getValue(Interesse.class);
-                if (interesse != null) {
-                    mCandidato.getmInteresses().add(interesse);
-                    getUserExperience();
-                }
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String prevChildKey) {
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String prevChildKey) {
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
-    }
-
-    public void getUserExperience(){
-        myRef = FirebaseDatabase.getInstance().getReference().child("trabalhador")
-                .child(mCandidato.getKey()).child("experiencia");
-        // Read from the database
-        myRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
-                Experiencia experiencia = dataSnapshot.getValue(Experiencia.class);
-                if (experiencia != null) {
-                    mCandidato.getmExperiencia().add(experiencia);
-                }
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String prevChildKey) {
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String prevChildKey) {
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
-    }
-
-
-    public void waitData(){
-        new CountDownTimer(200, 1000) {
-            public void onTick(long millisUntilFinished) {
-                //progressLoad.setVisibility(View.VISIBLE);
-            }
-
-            public void onFinish() {
-                loadVagas();
-                //espera e carrega as tags
-                waitDataVagas();
-            }
-        }.start();
-    }
-
-
-
     public  void loadVagas(){
         // Read from the database
         myRef = FirebaseDatabase.getInstance().getReference().child("vagas");
@@ -214,7 +147,39 @@ public class MainActivity extends AppCompatActivity
             public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
                 Vagas vaga = dataSnapshot.getValue(Vagas.class);
                 vaga.setVagaId(dataSnapshot.getKey());
-                mVagasReserva.add(vaga);
+                pgb.setVisibility(View.INVISIBLE);
+                DataSnapshot dataSnapshotInt = dataSnapshot.child("interesses");
+                Iterable<DataSnapshot> intChildren = dataSnapshotInt.getChildren();
+                for(DataSnapshot intC : intChildren){
+                    Interesse intT = intC.getValue(Interesse.class);
+                    vaga.getmInteresses().add(intT);
+                }
+
+                if(mCandidato.getMunicipio().toLowerCase().equals(vaga.getCidade().toLowerCase())){
+                    //encontrei vaga proxima
+                    for(Experiencia e : mCandidato.getmExperiencia()){
+                        if (e.getCbo().toLowerCase().equals(vaga.getCBO().toLowerCase()) || e.getCbo().toLowerCase().equals(vaga.getOcupacao().toLowerCase())) {//se o CBO for igual já adiciona a lista
+                            Log.d("LOCAL: ", "Encontrei um local com sua experiência.");
+                            if(!mVagas.contains(vaga)){
+                                pgb.setVisibility(View.INVISIBLE);
+                                mVagas.add(vaga);
+                                mAdapter.notifyDataSetChanged();
+                            }
+                        }else{//Verifica as habilidades do funcionário se há alguma possibilidade de contratação
+                            for(Interesse canInt : mCandidato.getmInteresses()){
+                                for(Interesse vagaInt : vaga.getmInteresses()){
+                                    if(canInt.getChave().toLowerCase().equals(vagaInt.getChave().toLowerCase())){
+                                        if(!mVagas.contains(vaga)){
+                                            pgb.setVisibility(View.INVISIBLE);
+                                            mVagas.add(vaga);
+                                            mAdapter.notifyDataSetChanged();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             @Override
@@ -231,108 +196,6 @@ public class MainActivity extends AppCompatActivity
             public void onCancelled(DatabaseError databaseError) {}
         });
     }
-
-    public void waitDataVagas(){
-        new CountDownTimer(1000, 1000) {
-
-            public void onTick(long millisUntilFinished) {
-                //progressLoad.setVisibility(View.VISIBLE);
-            }
-
-            public void onFinish() {
-                //Toast.makeText(MainActivity.this, "Size: "+Integer.toString(mVagasReserva.size()), Toast.LENGTH_SHORT).show();
-                //Realizar a busca por empresa
-                searchEngine();
-            }
-        }.start();
-    }
-
-    public void searchEngine(){
-        for(Integer  i = 0; i < mVagasReserva.size(); i++) {
-            search(i);
-            waitFoRealSearch();
-        }
-        //waitFoRealSearch();
-        //wait here
-        //pgb.setVisibility(View.INVISIBLE);
-        Toast.makeText(this, "iniciando...", Toast.LENGTH_SHORT).show();
-    }
-
-
-    public void waitFoRealSearch(){
-        new CountDownTimer(100, 1000) {
-
-            public void onTick(long millisUntilFinished) {
-                //progressLoad.setVisibility(View.VISIBLE);
-            }
-
-            public void onFinish() {
-                if(mVagas.size() > 0){
-                    pgb.setVisibility(View.INVISIBLE);
-                }
-            }
-        }.start();
-    }
-
-
-    public void search(final Integer position){
-        DatabaseReference myRef =  FirebaseDatabase.getInstance().getReference().child("vagas")
-                .child(mVagasReserva.get(position).getVagaId()).child("interesses");
-        myRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Interesse interesse = dataSnapshot.getValue(Interesse.class);
-                mVagasReserva.get(position).getmInteresses().add(interesse);
-                //verifica se o local é próximo do usuário
-                if(mCandidato.getMunicipio().toLowerCase().equals(mVagasReserva.get(position).getCidade().toLowerCase())){
-                    Log.d("LOCAL: ", "Enconrei um local próximo.");
-
-                    for(Experiencia e : mCandidato.getmExperiencia()){
-                        if (e.getCbo().toLowerCase().equals(mVagasReserva.get(position).getCBO().toLowerCase()) || e.getCbo().toLowerCase().equals(mVagasReserva.get(position).getOcupacao().toLowerCase())) {//se o CBO for igual já adiciona a lista
-                            Log.d("LOCAL: ", "Encontrei um local com sua experiência.");
-                            Toast.makeText(MainActivity.this, "Iniciando serviço", Toast.LENGTH_SHORT).show();
-                            if(!mVagas.contains(mVagasReserva.get(position))){
-                                mVagas.add(mVagasReserva.get(position));
-                                Toast.makeText(MainActivity.this, "Cheguei aqui", Toast.LENGTH_SHORT).show();
-                                mAdapter.notifyDataSetChanged();
-                            }
-                        }else{//Verifica as habilidades do funcionário se há alguma possibilidade de contratação
-                            for(Interesse canInt : mCandidato.getmInteresses()){
-                                if(canInt.getChave().toLowerCase().equals(interesse.getChave().toLowerCase())){
-                                    if(!mVagas.contains(mVagasReserva.get(position))){
-                                        Log.d("LOCAL: ", "Encontrei um local  para as suas habilidades.");
-                                        mVagas.add(mVagasReserva.get(position));
-                                        mAdapter.notifyDataSetChanged();
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                Toast.makeText(MainActivity.this, Integer.toString(mVagas.size()), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
 
     @Override
     public void onBackPressed() {
@@ -374,18 +237,15 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_camera) {
             Intent intent = new Intent(this, JobsActivity.class);
+            intent.putExtra("userID", mCandidato.getUserID());
             startActivity(intent);
 
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
-
+            firebaseAuth.signOut();
+            Intent loginIntent = new Intent(this, StartActivity.class);
+            startActivity(loginIntent);
+            finish();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

@@ -2,6 +2,7 @@ package adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -63,8 +64,16 @@ public class JobsAdapter extends RecyclerView.Adapter<JobsAdapter.MyViewHolder> 
         final Jobs job = listJobs.get(position);
         holder.tvCargo.setText(job.getCargo());
         holder.tvEmpresa.setText(job.getEmpresa());
-        holder.tvSalario.setText(job.getSalario());
+        holder.tvSalario.setText("Salário: "+job.getSalario());
         holder.tvSituacao.setText(job.getSituacao());
+
+        if(job.getSituacao().equals("Aguardando")){
+            holder.tvSituacao.setTextColor(Color.parseColor("#ef6c00"));
+        }else if(job.getSituacao().equals("Aprovado")){
+            holder.tvSituacao.setTextColor(Color.parseColor("#4caf50"));
+        }else if(job.getSituacao().equals("Recusado")){
+            holder.tvSituacao.setTextColor(Color.parseColor("#f44336"));
+        }
 
          /*hold card click*/
         holder.mCardView.setOnClickListener(new View.OnClickListener() {

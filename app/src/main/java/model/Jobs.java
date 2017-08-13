@@ -10,6 +10,8 @@ public class Jobs {
     private String salario;
     private String candidatoId;
 
+    public Jobs(){}
+
     public Jobs(String cargo, String empresa, String situacao, String salario, String vagaId) {
         this.cargo = cargo;
         this.empresa = empresa;
